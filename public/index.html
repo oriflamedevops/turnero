@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Turnero - Calificaciones</title>
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .landing { text-align: center; max-width: 480px; width: 100%; padding: 2rem; }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    p  { color: var(--text-muted); margin-bottom: 2rem; }
+    .options { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .option {
+      display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+      padding: 2rem 2.5rem; border: 2px solid var(--border); border-radius: var(--radius);
+      text-decoration: none; color: var(--text); background: var(--surface);
+      transition: all 0.2s; box-shadow: var(--shadow);
+    }
+    .option:hover { border-color: var(--primary); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .icon { font-size: 3rem; }
+    .option span { font-weight: 600; font-size: 1.1rem; }
+    .sub { font-size: 0.85rem; color: var(--text-muted); font-weight: 400; }
+  </style>
+</head>
+<body>
+  <div class="landing">
+    <h1>⭐ Turnero</h1>
+    <p>Sistema de calificacion de servicio al cliente</p>
+    <div class="options">
+      <a href="/station/" class="option">
+        <div class="icon">🖥️</div>
+        <span>Estación</span>
+        <small class="sub">Para agentes</small>
+      </a>
+      <a href="/admin/" class="option">
+        <div class="icon">📊</div>
+        <span>Administrar</span>
+        <small class="sub">Reportes y agentes</small>
+      </a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Turnero</title>
+  <link rel="stylesheet" href="/shared/style.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/" class="navbar-brand">⭐ Turnero</a>
+    <div class="navbar-nav">
+      <a href="dashboard.html" class="nav-link active">📊 Dashboard</a>
+      <a href="agents.html" class="nav-link">👥 Agentes</a>
+    </div>
+    <div class="navbar-actions">
+      <button class="btn btn-sm" onclick="exportCsv()">⬇ Exportar CSV</button>
+      <button class="btn btn-sm btn-danger" onclick="logout()">Salir</button>
+    </div>
+  </nav>
+
+  <main class="main">
+    <h1 class="page-title">Dashboard de Calificaciones</h1>
+
+    <!-- Filtros -->
+    <div class="filter-bar">
+      <div class="form-group">
+        <label>Desde</label>
+        <input type="date" id="filter-from">
+      </div>
+      <div class="form-group">
+        <label>Hasta</label>
+        <input type="date" id="filter-to">
+      </div>
+      <div class="form-group">
+        <label>Agente</label>
+        <select id="filter-agent">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tendencia por</label>
+        <select id="filter-granularity">
+          <option value="day">Día</option>
+          <option value="week">Semana</option>
+          <option value="month" selected>Mes</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="applyFilters()">Aplicar</button>
+      <button class="btn" onclick="resetFilters()">Limpiar</button>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="label">Promedio General</div>
+        <div class="value" id="kpi-avg">—</div>
+        <div class="sub">sobre 5 estrellas</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">Total Calificaciones</div>
+        <div class="value" id="kpi-total">—</div>
+        <div class="sub">en el período</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">Mejor Agente</div>
+        <div class="value" id="kpi-best" style="font-size:1.2rem">—</div>
+        <div class="sub" id="kpi-best-score"></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">Agentes Activos</div>
+        <div class="value" id="kpi-agents">—</div>
+        <div class="sub">con calificaciones</div>
+      </div>
+    </div>
+
+    <!-- Gráficas -->
+    <div class="charts-grid">
+      <div class="card chart-card">
+        <h3>Distribución de calificaciones</h3>
+        <canvas id="chart-dist"></canvas>
+      </div>
+      <div class="card chart-card">
+        <h3>Tendencia promedio</h3>
+        <canvas id="chart-trend"></canvas>
+      </div>
+    </div>
+
+    <!-- Tabla por agente -->
+    <div class="card" style="margin-bottom:1.5rem; overflow:auto">
+      <div class="section-header">
+        <h2>Por agente</h2>
+      </div>
+      <table class="sortable" id="agents-table">
+        <thead>
+          <tr>
+            <th onclick="sortTable(0)">Agente <span class="sort-arrow">↕</span></th>
+            <th onclick="sortTable(1)">Código <span class="sort-arrow">↕</span></th>
+            <th onclick="sortTable(2)">Estado <span class="sort-arrow">↕</span></th>
+            <th onclick="sortTable(3)">Calificaciones <span class="sort-arrow">↕</span></th>
+            <th onclick="sortTable(4)">Promedio <span class="sort-arrow">↕</span></th>
+            <th onclick="sortTable(5)">Última calificación <span class="sort-arrow">↕</span></th>
+            <th>Tendencia</th>
+          </tr>
+        </thead>
+        <tbody id="agents-tbody"></tbody>
+      </table>
+      <div id="agents-empty" style="text-align:center;padding:2rem;color:var(--text-muted);display:none">
+        Sin datos para el período seleccionado
+      </div>
+    </div>
+
+    <!-- Feed reciente -->
+    <div class="card">
+      <div class="section-header" style="margin-bottom:1rem">
+        <h2>Últimas calificaciones</h2>
+      </div>
+      <div id="feed" class="feed"></div>
+      <div id="feed-empty" style="text-align:center;padding:1.5rem;color:var(--text-muted);display:none">
+        Sin calificaciones aún
+      </div>
+    </div>
+  </main>
+
+  <script src="/shared/chart.min.js"></script>
+  <script src="/shared/api.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estación - Turnero</title>
+  <link rel="stylesheet" href="station.css">
+</head>
+<body>
+
+  <!-- PANTALLA: En espera -->
+  <div id="screen-standby" class="screen active">
+    <div class="standby-content">
+      <div class="agent-badge">
+        <div class="agent-avatar" id="standby-avatar"></div>
+        <div>
+          <div class="agent-label">Agente activo</div>
+          <div class="agent-name" id="standby-name"></div>
+        </div>
+      </div>
+      <div class="standby-icon">🪑</div>
+      <h1>En espera de cliente</h1>
+      <p>Cuando atiendas a un cliente, presiona el botón para que te califique</p>
+      <button class="btn-rate-now" onclick="showRating()">
+        ✅ Registrar calificación
+      </button>
+      <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <!-- PANTALLA: Calificar -->
+  <div id="screen-rate" class="screen">
+    <div class="rate-header">
+      <p>Por favor califique nuestro servicio</p>
+    </div>
+    <div class="buttons-grid">
+      <button class="rate-btn excelente" onclick="submitRating(5, 'EXCELENTE')">
+        EXCELENTE
+      </button>
+      <button class="rate-btn bueno" onclick="submitRating(4, 'BUENO')">
+        BUENO
+      </button>
+      <button class="rate-btn regular" onclick="submitRating(3, 'REGULAR')">
+        REGULAR
+      </button>
+      <button class="rate-btn malo" onclick="submitRating(2, 'MUY MALO')">
+        MUY MALO
+      </button>
+      <button class="rate-btn malo" onclick="submitRating(1, 'MALO')">
+        MALO
+      </button>
+    </div>
+    <button class="btn-cancel-rate" onclick="cancelRating()">← Cancelar</button>
+  </div>
+
+  <!-- PANTALLA: Guardado -->
+  <div id="screen-saved" class="screen">
+    <div class="saved-content">
+      <div class="saved-icon" id="saved-icon"></div>
+      <h1 id="saved-label"></h1>
+      <p>¡Gracias por tu calificación!</p>
+    </div>
+  </div>
+
+  <!-- Input invisible que mantiene el foco para capturar teclas del teclado físico -->
+  <input id="key-trap" style="opacity:0;position:fixed;top:0;left:0;width:1px;height:1px;" readonly>
+
+  <script>
+    // Verificar sesión
+    const agentRaw = sessionStorage.getItem('stationAgent');
+    if (!agentRaw) window.location.href = '/station/';
+    const agent = JSON.parse(agentRaw);
+
+    // Mostrar nombre del agente
+    document.getElementById('standby-name').textContent = agent.name;
+    document.getElementById('standby-avatar').textContent = agent.name.charAt(0).toUpperCase();
+
+    function currentScreen() {
+      return document.querySelector('.screen.active')?.id;
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function showRating() { showScreen('screen-rate'); }
+    function cancelRating() { showScreen('screen-standby'); }
+    function logout() {
+      sessionStorage.removeItem('stationAgent');
+      window.location.href = '/station/';
+    }
+
+    const SAVED_CONFIG = {
+      5: { icon: '😀', label: 'EXCELENTE', color: '#1565c0' },
+      4: { icon: '🙂', label: 'BUENO',     color: '#2e7d32' },
+      3: { icon: '😐', label: 'REGULAR',   color: '#f57f17' },
+      2: { icon: '😠', label: 'MUY MALO',  color: '#b71c1c' },
+      1: { icon: '😞', label: 'MALO',      color: '#c62828' },
+    };
+
+    // ── Mapeo de teclas del teclado físico ────────────────────────────────
+    // Cambia estos valores según lo que detectes con el modo detección (Ctrl+D)
+    // Formato: 'key' → [score, label]
+    // 'key' es el valor de event.key (ej: '1', 'F1', 'ArrowUp', etc.)
+    const KEY_MAP = {
+      '7': [5, 'EXCELENTE'],
+      '4': [4, 'BUENO'],
+      '1': [3, 'REGULAR'],
+      '0': [1, 'MALO'],
+    };
+
+    // Mantener foco en el input trampa para que las teclas siempre lleguen
+    const trap = document.getElementById('key-trap');
+    trap.focus();
+    document.addEventListener('click', () => trap.focus());
+    trap.addEventListener('blur', () => trap.focus());
+
+    // ── Captura de teclas ─────────────────────────────────────────────────
+    window.addEventListener('keydown', e => {
+      // Buscar en KEY_MAP por key o por code (ej: Numpad7)
+      const codeKey = e.code.replace('Numpad', ''); // "Numpad7" → "7"
+      const mapping = KEY_MAP[e.key] || KEY_MAP[codeKey];
+
+      if (!mapping) return;
+      e.preventDefault();
+
+      const screen = currentScreen();
+      if (screen === 'screen-standby') {
+        showRating();
+        // Pequeño delay para que la pantalla cambie antes de registrar
+        setTimeout(() => submitRating(mapping[0], mapping[1]), 100);
+      } else if (screen === 'screen-rate') {
+        submitRating(mapping[0], mapping[1]);
+      }
+    });
+
+    // ── Enviar calificación ───────────────────────────────────────────────
+    let submitting = false;
+
+    async function submitRating(score, label) {
+      if (submitting) return;
+      submitting = true;
+      document.querySelectorAll('.rate-btn').forEach(b => b.disabled = true);
+
+      try {
+        const res = await fetch('/api/ratings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ agent_id: agent.id, score })
+        });
+        if (!res.ok) throw new Error();
+      } catch {
+        document.querySelectorAll('.rate-btn').forEach(b => b.disabled = false);
+        submitting = false;
+        return;
+      }
+
+      const cfg = SAVED_CONFIG[score];
+      document.getElementById('saved-icon').textContent  = cfg.icon;
+      document.getElementById('saved-label').textContent = cfg.label;
+      document.getElementById('saved-label').style.color = cfg.color;
+
+      showScreen('screen-saved');
+
+      setTimeout(() => {
+        document.querySelectorAll('.rate-btn').forEach(b => b.disabled = false);
+        submitting = false;
+        showScreen('screen-standby');
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calificar Servicio</title>
+  <link rel="stylesheet" href="kiosk.css">
+</head>
+<body>
+
+  <!-- Pantalla 1: Seleccionar agente -->
+  <div id="screen-select" class="screen active">
+    <div class="kiosk-header">
+      <h1>¿Quién te atendió?</h1>
+      <p>Selecciona a la persona que te dio servicio</p>
+    </div>
+    <div id="agent-grid" class="agent-grid"></div>
+    <div id="no-agents" class="empty-state" style="display:none">
+      <div class="empty-icon">😴</div>
+      <p>No hay agentes disponibles</p>
+    </div>
+  </div>
+
+  <!-- Pantalla 2: Calificar -->
+  <div id="screen-rate" class="screen">
+    <div class="rate-header">
+      <p>Por favor califique nuestro servicio</p>
+      <div id="rate-agent-name" class="agent-label"></div>
+    </div>
+    <div class="buttons-grid">
+      <button class="rate-btn excelente" onclick="submitRating(5)">EXCELENTE</button>
+      <button class="rate-btn bueno"     onclick="submitRating(4)">BUENO</button>
+      <button class="rate-btn regular"   onclick="submitRating(3)">REGULAR</button>
+      <button class="rate-btn malo"      onclick="submitRating(1)">MALO</button>
+    </div>
+    <button class="btn-back" onclick="goBack()">← Volver</button>
+  </div>
+
+  <!-- Pantalla 3: Gracias -->
+  <div id="screen-thanks" class="screen">
+    <div class="thanks-content">
+      <div class="thanks-icon" id="thanks-icon"></div>
+      <h1 id="thanks-label"></h1>
+      <p>¡Gracias por tu calificación!</p>
+      <div class="countdown">Volviendo en <span id="countdown-num">3</span>s</div>
+    </div>
+  </div>
+
+  <script>
+    const SAVED_CONFIG = {
+      5: { icon: '😀', label: 'EXCELENTE', color: '#1565c0' },
+      4: { icon: '🙂', label: 'BUENO',     color: '#2e7d32' },
+      3: { icon: '😐', label: 'REGULAR',   color: '#f57f17' },
+      1: { icon: '😞', label: 'MALO',      color: '#c62828' },
+    };
+
+    let selectedAgent = null;
+    let countdown = null;
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    async function loadAgents() {
+      const res = await fetch('/api/agents');
+      const agents = await res.json();
+      const grid = document.getElementById('agent-grid');
+      if (!agents.length) {
+        grid.style.display = 'none';
+        document.getElementById('no-agents').style.display = 'block';
+        return;
+      }
+      grid.innerHTML = agents.map(a => `
+        <button class="agent-btn" onclick="selectAgent(${a.id}, '${a.name.replace(/'/g,"\\'")}')">
+          <div class="avatar">${a.name.charAt(0).toUpperCase()}</div>
+          <div class="agent-name">${a.name}</div>
+          <div class="agent-code">${a.code}</div>
+        </button>
+      `).join('');
+    }
+
+    function selectAgent(id, name) {
+      selectedAgent = id;
+      document.getElementById('rate-agent-name').textContent = name;
+      showScreen('screen-rate');
+    }
+
+    function goBack() {
+      selectedAgent = null;
+      showScreen('screen-select');
+    }
+
+    async function submitRating(score) {
+      document.querySelectorAll('.rate-btn').forEach(b => b.disabled = true);
+      try {
+        await fetch('/api/ratings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ agent_id: selectedAgent, score })
+        });
+      } catch {
+        document.querySelectorAll('.rate-btn').forEach(b => b.disabled = false);
+        return;
+      }
+
+      const cfg = SAVED_CONFIG[score];
+      document.getElementById('thanks-icon').textContent = cfg.icon;
+      document.getElementById('thanks-label').textContent = cfg.label;
+      document.getElementById('thanks-label').style.color = cfg.color;
+      showScreen('screen-thanks');
+
+      let n = 3;
+      document.getElementById('countdown-num').textContent = n;
+      if (countdown) clearInterval(countdown);
+      countdown = setInterval(() => {
+        n--;
+        document.getElementById('countdown-num').textContent = n;
+        if (n <= 0) {
+          clearInterval(countdown);
+          document.querySelectorAll('.rate-btn').forEach(b => b.disabled = false);
+          selectedAgent = null;
+          showScreen('screen-select');
+        }
+      }, 1000);
+    }
+
+    loadAgents();
+  </script>
+</body>
+</html>

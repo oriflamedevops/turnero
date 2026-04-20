@@ -1,0 +1,12 @@
+node_modules/
+
+# Base de datos (incluye archivos WAL de SQLite)
+turnero.db
+turnero.db-shm
+turnero.db-wal
+
+# Variables de entorno (contiene la URL de la base de datos)
+.env
+
+# Configuración con datos sensibles (PIN)
+config.json

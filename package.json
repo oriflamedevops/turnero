@@ -1,0 +1,25 @@
+{
+  "name": "turnero",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js",
+    "postinstall": "node -e \"const fs=require('fs'); fs.copyFileSync('node_modules/chart.js/dist/chart.umd.min.js','public/shared/chart.min.js'); console.log('Chart.js copiado.');\" 2>/dev/null || true"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.104.0",
+    "chart.js": "^4.5.1",
+    "dotenv": "^16.5.0",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

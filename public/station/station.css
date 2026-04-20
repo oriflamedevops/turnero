@@ -1,0 +1,171 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  background: #0f1923;
+  color: white;
+}
+
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 2rem;
+  animation: fadeIn 0.25s ease;
+}
+.screen.active { display: flex; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── STANDBY ────────────────────────────────────────────────── */
+.standby-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+  max-width: 480px;
+}
+
+.agent-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 999px;
+  padding: 0.5rem 1.25rem 0.5rem 0.5rem;
+  align-self: center;
+}
+
+.agent-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: #2563eb;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; font-weight: 700; color: white;
+}
+
+.agent-label { font-size: 0.72rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.05em; }
+.agent-name  { font-weight: 700; font-size: 1rem; }
+
+.standby-icon { font-size: 5rem; filter: grayscale(0.3); }
+
+.standby-content h1 { font-size: 1.8rem; font-weight: 700; }
+.standby-content p  { opacity: 0.6; font-size: 1rem; max-width: 340px; line-height: 1.5; }
+
+.btn-rate-now {
+  padding: 1.1rem 3rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 999px;
+  border: none;
+  background: #22c55e;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(34,197,94,0.35);
+  letter-spacing: 0.02em;
+}
+.btn-rate-now:hover {
+  background: #16a34a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(34,197,94,0.45);
+}
+
+.btn-logout {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.4);
+  padding: 0.5rem 1.5rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.15s;
+}
+.btn-logout:hover { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.4); }
+
+/* ── RATE SCREEN ────────────────────────────────────────────── */
+.rate-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.rate-header p {
+  font-size: 1.6rem;
+  font-weight: 600;
+  opacity: 0.9;
+  letter-spacing: 0.01em;
+}
+
+.buttons-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.rate-btn {
+  width: 100%;
+  padding: 1.4rem 2rem;
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.rate-btn:not(:disabled):hover  { transform: scale(1.03); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+.rate-btn:not(:disabled):active { transform: scale(0.98); }
+.rate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.rate-btn.excelente { background: #1565c0; }
+.rate-btn.bueno     { background: #2e7d32; }
+.rate-btn.regular   { background: #f9a825; color: #1a1a1a; text-shadow: none; }
+.rate-btn.malo      { background: #c62828; }
+
+.btn-cancel-rate {
+  margin-top: 1.5rem;
+  background: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.5);
+  padding: 0.5rem 1.5rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.15s;
+}
+.btn-cancel-rate:hover { color: white; border-color: rgba(255,255,255,0.5); }
+
+/* ── SAVED SCREEN ───────────────────────────────────────────── */
+.saved-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+.saved-icon { font-size: 6rem; animation: pop 0.4s ease; }
+@keyframes pop { 0% { transform: scale(0.3); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
+.saved-content h1 { font-size: 3rem; font-weight: 900; letter-spacing: 0.05em; }
+.saved-content p  { font-size: 1.2rem; opacity: 0.6; }
+
+/* Responsive */
+@media (min-width: 600px) {
+  .buttons-grid { max-width: 600px; }
+  .rate-btn { font-size: 2.4rem; padding: 1.6rem 2rem; }
+}
+
+@media (max-width: 400px) {
+  .rate-btn { font-size: 1.5rem; padding: 1.1rem; }
+  .rate-header p { font-size: 1.3rem; }
+}

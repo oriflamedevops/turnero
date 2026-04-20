@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test teclado</title>
+  <style>
+    body { background: #111; color: white; font-family: monospace;
+           display: flex; flex-direction: column; align-items: center;
+           justify-content: center; min-height: 100vh; margin: 0; }
+    #key { font-size: 5rem; font-weight: bold; color: #0f0; min-height: 6rem; }
+    #log { font-size: 1rem; opacity: 0.6; margin-top: 1rem; }
+    input { opacity: 0; position: absolute; }
+  </style>
+</head>
+<body>
+  <p style="opacity:0.5">Presiona cualquier tecla del teclado físico</p>
+  <div id="key">—</div>
+  <div id="log"></div>
+  <input id="trap" autofocus>
+  <script>
+    const keyEl = document.getElementById('key');
+    const logEl = document.getElementById('log');
+
+    // Escucha en documento Y en window
+    ['keydown','keypress','keyup'].forEach(evt => {
+      window.addEventListener(evt, e => {
+        if (evt === 'keydown') {
+          keyEl.textContent = e.key;
+          logEl.textContent = `code="${e.code}"  keyCode=${e.keyCode}  which=${e.which}`;
+        }
+      });
+    });
+
+    // Mantener foco en el input trampa
+    document.getElementById('trap').addEventListener('blur', () => {
+      document.getElementById('trap').focus();
+    });
+    document.getElementById('trap').focus();
+  </script>
+</body>
+</html>

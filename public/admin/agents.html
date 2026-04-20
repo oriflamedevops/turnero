@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentes - Turnero</title>
+  <link rel="stylesheet" href="/shared/style.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/" class="navbar-brand">⭐ Turnero</a>
+    <div class="navbar-nav">
+      <a href="dashboard.html" class="nav-link">📊 Dashboard</a>
+      <a href="agents.html" class="nav-link active">👥 Agentes</a>
+    </div>
+    <div class="navbar-actions">
+      <button class="btn btn-sm btn-danger" onclick="logout()">Salir</button>
+    </div>
+  </nav>
+
+  <main class="main">
+    <h1 class="page-title">Gestión de Agentes</h1>
+    <div class="agents-layout">
+
+      <!-- Formulario -->
+      <div>
+        <div class="card" id="form-card">
+          <h2 id="form-title" style="margin-bottom:1.25rem;font-size:1.1rem">Agregar agente</h2>
+          <div id="form-alert"></div>
+          <div class="form-group">
+            <label>Nombre completo</label>
+            <input type="text" id="agent-name" placeholder="Ej: María García" maxlength="100">
+          </div>
+          <div class="form-group">
+            <label>Código</label>
+            <input type="text" id="agent-code" placeholder="Ej: MGA" maxlength="20">
+            <small style="color:var(--text-muted)">Se guardará en mayúsculas</small>
+          </div>
+          <div class="form-group">
+            <label>PIN de estación</label>
+            <input type="password" id="agent-pin" placeholder="Ej: 1234" maxlength="10" autocomplete="off" inputmode="numeric">
+            <small style="color:var(--text-muted)">El agente lo usará para iniciar sesión en su estación</small>
+          </div>
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="saveAgent()" id="btn-save">Agregar agente</button>
+            <button class="btn" onclick="cancelEdit()" id="btn-cancel" style="display:none">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla -->
+      <div class="card" style="overflow:auto">
+        <div class="section-header">
+          <h2>Lista de agentes</h2>
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.9rem;cursor:pointer">
+            <input type="checkbox" id="show-inactive" onchange="loadAgents()">
+            Mostrar inactivos
+          </label>
+        </div>
+        <div id="agents-alert"></div>
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Nombre</th>
+              <th>PIN</th>
+              <th>Estado</th>
+              <th>Calificaciones</th>
+              <th>Promedio</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="agents-tbody"></tbody>
+        </table>
+        <div id="agents-empty" style="text-align:center;padding:2rem;color:var(--text-muted);display:none">
+          No hay agentes aún. Agrega el primero desde el formulario.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/shared/api.js"></script>
+  <script src="agents.js"></script>
+</body>
+</html>
