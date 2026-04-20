@@ -10,3 +10,5 @@ turnero.db-wal
 
 # Configuración con datos sensibles (PIN)
 config.json
+.vercel
+.env*.local
