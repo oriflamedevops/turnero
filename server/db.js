@@ -5,8 +5,7 @@ const url = process.env.SUPABASE_URL;
 const key = process.env.SUPABASE_ANON_KEY;
 
 if (!url || !key) {
-  console.error('\n✗ ERROR: SUPABASE_URL y SUPABASE_ANON_KEY deben estar definidos en .env\n');
-  process.exit(1);
+  throw new Error('SUPABASE_URL y SUPABASE_ANON_KEY deben estar definidos en las variables de entorno');
 }
 
 const supabase = createClient(url, key, {
