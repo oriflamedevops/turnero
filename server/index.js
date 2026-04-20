@@ -6,8 +6,12 @@ const bcrypt   = require('bcryptjs');
 const jwt      = require('jsonwebtoken');
 const supabase = require('./db');
 
-const JWT_SECRET  = process.env.JWT_SECRET  || 'dev-secret-inseguro';
-const ADMIN_PASS  = process.env.ADMIN_PASSWORD || 'admin1234';
+const JWT_SECRET = process.env.JWT_SECRET;
+const ADMIN_PASS = process.env.ADMIN_PASSWORD;
+
+if (!JWT_SECRET || !ADMIN_PASS) {
+  throw new Error('JWT_SECRET y ADMIN_PASSWORD deben estar definidos en las variables de entorno');
+}
 
 const app = express();
 

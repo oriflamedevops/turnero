@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-inseguro';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 function requireAdmin(req, res, next) {
   const header = req.headers['authorization'];
