@@ -1,9 +1,9 @@
-if (!sessionStorage.getItem('adminPin')) window.location.href = '/admin/';
+if (!isTokenValid()) window.location.href = '/admin/';
 
 let editingId = null;
 
 function logout() {
-  sessionStorage.removeItem('adminPin');
+  sessionStorage.removeItem('adminToken');
   window.location.href = '/admin/';
 }
 

@@ -1,6 +1,11 @@
-const express = require('express');
+const express  = require('express');
+const bcrypt   = require('bcryptjs');
 const supabase = require('../db');
 const { requireAdmin } = require('../middleware/auth');
+
+async function hashPassword(raw) {
+  return raw ? bcrypt.hash(String(raw), 10) : null;
+}
 
 const router = express.Router();
 
@@ -30,7 +35,7 @@ router.post('/', requireAdmin, async (req, res) => {
 
   const { data, error } = await supabase
     .from('agents')
-    .insert({ name: name.trim(), code: code.trim().toUpperCase(), pin: pin ? String(pin) : null })
+    .insert({ name: name.trim(), code: code.trim().toUpperCase(), pin: await hashPassword(pin) })
     .select('id')
     .single();
 
@@ -53,7 +58,7 @@ router.patch('/:id', requireAdmin, async (req, res) => {
     name:   req.body.name   !== undefined ? req.body.name.trim()               : agent.name,
     code:   req.body.code   !== undefined ? req.body.code.trim().toUpperCase()  : agent.code,
     active: req.body.active !== undefined ? (req.body.active ? 1 : 0)           : agent.active,
-    pin:    req.body.pin    !== undefined ? (req.body.pin ? String(req.body.pin) : null) : agent.pin,
+    pin:    req.body.pin    !== undefined ? await hashPassword(req.body.pin) : agent.pin,
   };
 
   const { error } = await supabase.from('agents').update(updates).eq('id', id);
